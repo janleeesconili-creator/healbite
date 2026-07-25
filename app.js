@@ -3,6 +3,7 @@ const defaults=[
  {name:"Healbite Animal Bite Clinic – Mandaluyong",short:"Mandaluyong",results:0,cost:0,budget:0,spent:0,impressions:0,reach:0}
 ];
 let state=JSON.parse(localStorage.getItem("healbite-dashboard")||"null")||{clinics:defaults,startDate:"",endDate:""};
+if(!Array.isArray(state.clinics)||state.clinics.length!==2)state.clinics=defaults;
 state.startDate=state.startDate||"";
 state.endDate=state.endDate||"";
 delete state.period;
