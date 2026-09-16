@@ -1,87 +1,13 @@
-const metricKeys=["results","cost","budget","spent","impressions","reach"];
-const moneyKeys=["cost","budget","spent"];
-const months=["January","February","March","April","May","June","July","August","September","October","November","December"];
-const emptyMetrics=()=>({results:0,cost:0,budget:0,spent:0,impressions:0,reach:0});
-const defaults=[
- {name:"Healbite Animal Bite Clinic – Pasig",short:"Pasig",...emptyMetrics()},
- {name:"Healbite Animal Bite Clinic – Mandaluyong",short:"Mandaluyong",...emptyMetrics()}
-];
-
-let state=JSON.parse(localStorage.getItem("healbite-dashboard")||"null")||{};
-if(!Array.isArray(state.clinics))state.clinics=[];
-state.clinics=defaults.map((base,i)=>({...base,...(state.clinics[i]&&typeof state.clinics[i]==="object"?state.clinics[i]:{})}));
-state.startDate=state.startDate||"";
-state.endDate=state.endDate||"";
-if(!Array.isArray(state.monthly))state.monthly=[];
-state.monthly=months.map((month,i)=>({
- month,
- pasig:{...emptyMetrics(),...(state.monthly[i]?.pasig||{})},
- mandaluyong:{...emptyMetrics(),...(state.monthly[i]?.mandaluyong||{})}
-}));
-delete state.period;
-let editing=false;
-
-const peso=n=>new Intl.NumberFormat("en-PH",{style:"currency",currency:"PHP",maximumFractionDigits:2}).format(n||0);
-const count=n=>new Intl.NumberFormat("en-PH").format(n||0);
-const total=key=>state.clinics.reduce((sum,c)=>sum+Number(c[key]||0),0);
-const formatMetric=(key,value)=>moneyKeys.includes(key)?peso(value):count(value);
-function totals(){const results=total("results"),spent=total("spent");return{results,cost:results?spent/results:0,budget:total("budget"),spent,impressions:total("impressions"),reach:total("reach")}}
-function dateLabel(){if(!state.startDate&&!state.endDate)return"Choose a date range";const nice=d=>d?new Date(d+"T00:00:00").toLocaleDateString("en-PH",{month:"short",day:"numeric",year:"numeric"}):"—";return`${nice(state.startDate)} – ${nice(state.endDate)}`}
-
-function ensureMonthlySection(){
- if(document.getElementById("monthlyPanel"))return;
- const panel=document.createElement("section");
- panel.id="monthlyPanel";
- panel.className="panel monthly-panel";
- panel.innerHTML=`
-  <div class="panel-head"><div><h2>Monthly comparison</h2><p>Complete January–December performance by clinic</p></div><span class="chip">Pasig vs Mandaluyong</span></div>
-  <div class="table-wrap monthly-wrap"><table class="monthly-table">
-   <thead>
-    <tr><th rowspan="2">Month</th><th colspan="6" class="clinic-group pasig-group">Pasig</th><th colspan="6" class="clinic-group manda-group">Mandaluyong</th></tr>
-    <tr>${metricKeys.map(k=>`<th>${metricLabel(k)}</th>`).join("")}${metricKeys.map(k=>`<th>${metricLabel(k)}</th>`).join("")}</tr>
-   </thead>
-   <tbody id="monthlyRows"></tbody><tfoot id="monthlyTotals"></tfoot>
-  </table></div>`;
- document.querySelector(".utilization").before(panel);
- const style=document.createElement("style");
- style.textContent=`
-  .monthly-panel{overflow:hidden}.monthly-wrap{max-height:600px}.monthly-table{min-width:1700px}
-  .monthly-table thead{position:sticky;top:0;z-index:2}.monthly-table th{white-space:nowrap}
-  .monthly-table th:first-child,.monthly-table td:first-child{position:sticky;left:0;z-index:1;background:#0d1117}
-  .monthly-table td:first-child{font-weight:700;color:#e6edf3}.clinic-group{text-align:center!important;font-size:12px!important}
-  .pasig-group{color:#7ee787!important;background:#12351f!important}.manda-group{color:#79c0ff!important;background:#112b46!important}
-  .monthly-table tbody tr:hover td{background:#1c2128}.monthly-table tbody tr:hover td:first-child{background:#161b22}
-  .monthly-cell{width:92px;color:#e6edf3;text-align:right;background:#0d1117;border:1px solid #58a6ff;border-radius:5px;padding:7px}
-  .monthly-table tfoot td{position:static;background:#2ea04312}.monthly-table tfoot td:first-child{position:sticky;left:0;background:#17351f}
- `;
- document.head.appendChild(style);
-}
-function metricLabel(key){return({results:"Results",cost:"Cost / result",budget:"Budget",spent:"Amount spent",impressions:"Impressions",reach:"Reach"})[key]}
-function monthlyCell(monthIndex,clinic,key,value){
- return editing?`<input class="monthly-cell" type="number" min="0" data-month="${monthIndex}" data-clinic="${clinic}" data-key="${key}" value="${value}">`:formatMetric(key,value);
-}
-function monthlyAggregate(clinic,key){
- if(key==="cost"){const results=state.monthly.reduce((s,m)=>s+Number(m[clinic].results||0),0),spent=state.monthly.reduce((s,m)=>s+Number(m[clinic].spent||0),0);return results?spent/results:0}
- return state.monthly.reduce((sum,m)=>sum+Number(m[clinic][key]||0),0);
-}
-function renderMonthly(){
- ensureMonthlySection();
- monthlyRows.innerHTML=state.monthly.map((m,i)=>`<tr><td>${m.month}</td>${metricKeys.map(k=>`<td>${monthlyCell(i,"pasig",k,m.pasig[k])}</td>`).join("")}${metricKeys.map(k=>`<td>${monthlyCell(i,"mandaluyong",k,m.mandaluyong[k])}</td>`).join("")}</tr>`).join("");
- monthlyTotals.innerHTML=`<tr><td>FULL YEAR</td>${metricKeys.map(k=>`<td>${formatMetric(k,monthlyAggregate("pasig",k))}</td>`).join("")}${metricKeys.map(k=>`<td>${formatMetric(k,monthlyAggregate("mandaluyong",k))}</td>`).join("")}</tr>`;
- document.querySelectorAll(".monthly-cell").forEach(el=>el.oninput=e=>{state.monthly[Number(e.target.dataset.month)][e.target.dataset.clinic][e.target.dataset.key]=Number(e.target.value)||0});
-}
-
-function render(){
- const t=totals(),pct=t.budget?Math.round(t.spent/t.budget*100):0;
- const cards=[["Results",count(t.results),"Total ad results"],["Cost per result",peso(t.cost),"Weighted average"],["Budget",peso(t.budget),"Total allocated"],["Amount spent",peso(t.spent),pct+"% of budget"],["Impressions",count(t.impressions),"Total ad views"],["Reach",count(t.reach),"Unique audience"]];
- metrics.innerHTML=cards.map(x=>`<article class="card"><label>${x[0]}</label><strong>${x[1]}</strong><small>${x[2]}</small></article>`).join("");
- startDate.value=state.startDate;endDate.value=state.endDate;startDate.disabled=!editing;endDate.disabled=!editing;periodChip.textContent=dateLabel();
- clinicRows.innerHTML=state.clinics.map((c,i)=>`<tr><td><strong>${c.short}</strong><br><small>${c.name}</small></td>${metricKeys.map(k=>`<td>${editing?`<input class="cell" type="number" min="0" data-i="${i}" data-k="${k}" value="${c[k]}">`:formatMetric(k,c[k])}</td>`).join("")}</tr>`).join("");
- totalsRow.innerHTML=`<tr><td>Total</td><td>${count(t.results)}</td><td>${peso(t.cost)}</td><td>${peso(t.budget)}</td><td>${peso(t.spent)}</td><td>${count(t.impressions)}</td><td>${count(t.reach)}</td></tr>`;
- bars.innerHTML=state.clinics.map(c=>{const p=c.budget?Math.min(100,c.spent/c.budget*100):0;return`<div class="bar-row"><div class="bar-label"><strong>${c.short}</strong><span>${peso(c.spent)} / ${peso(c.budget)}</span></div><div class="bar"><i style="width:${p}%"></i></div><b>${Math.round(p)}%</b></div>`}).join("");
- document.querySelectorAll(".cell").forEach(el=>el.oninput=e=>{state.clinics[e.target.dataset.i][e.target.dataset.k]=Number(e.target.value)||0});
- renderMonthly();
- editBtn.textContent=editing?"Save dashboard":"Edit data";
-}
-editBtn.onclick=()=>{if(editing){state.startDate=startDate.value;state.endDate=endDate.value;localStorage.setItem("healbite-dashboard",JSON.stringify(state))}editing=!editing;render()};
-render();
+const branches=[['baclaran','Healbite Baclaran','HB'],['gtuazon','Healbite G. Tuazon','HG'],['zanicare','Zanicare Parañaque','ZP'],['mandaluyong','Healbite Mandaluyong','HM'],['pasig','Healbite Pasig','HP']];
+const metrics=[['adsSpend','Ads Spend','Janlee','J',1],['costMessage','Cost per Message','Janlee','J',1],['creatives','New Ad Creatives Tested','Janlee','J',0],['messages','Number of Total Messages','Admin','A',0],['hotLeads','Hot Leads','Admin','A',0],['appointments','Number of Appointments','Admin','A',0],['bookings','Total Bookings','Admin','A',0],['organicViews','Page Views Organic','Ads Team','AT',0],['adsViews','Page Views Ads','Ads Team','AT',0]],monitor=['adsSpend','costMessage','messages','organicViews','adsViews'],legacy=['Sep 12–18','Sep 5–11','Aug 29–Sep 4','Aug 22–28','Aug 15–21'];
+const fmtDate=d=>d.toLocaleDateString('en-US',{month:'short'}),start=()=>{let d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-((d.getDay()+1)%7));return d};
+const periods=(()=>{let a=[],d=start(),f=new Date(2026,7,15,12);while(d>=f){let e=new Date(d);e.setDate(e.getDate()+6);a.push({start:new Date(d),end:e,label:d.getMonth()===e.getMonth()?`${fmtDate(d)} ${d.getDate()}–${e.getDate()}`:`${fmtDate(d)} ${d.getDate()}–${fmtDate(e)} ${e.getDate()}`});d.setDate(d.getDate()-7)}return a})(),weeks=periods.map(x=>x.label),months=Object.entries(periods.reduce((m,w,i)=>{let k=w.end.toLocaleDateString('en-US',{month:'long',year:'numeric'});(m[k]??=[]).push(i);return m},{}));
+const blank=()=>Object.fromEntries(metrics.map(m=>[m[0],0])),seed=()=>Object.fromEntries(branches.map(b=>[b[0],weeks.map(blank)]));let data=seed(),labels=JSON.parse(localStorage.getItem('hb-labels')||JSON.stringify(legacy)),old=JSON.parse(localStorage.getItem('hb-data')||'null');if(old)data=Object.fromEntries(branches.map(b=>[b[0],weeks.map(w=>old[b[0]]?.[labels.indexOf(w)]||blank())]));
+let view='dashboard',branch='baclaran',dashBranch='all',mode='weekly',period='all';const peso=n=>new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP',maximumFractionDigits:2}).format(n||0),count=n=>new Intl.NumberFormat('en-PH').format(n||0),def=k=>metrics.find(m=>m[0]===k),format=(k,n)=>def(k)[4]?peso(n):count(n),total=(rows,k)=>k==='costMessage'?(rows.filter(r=>r[k]>0).reduce((s,r)=>s+r[k],0)/(rows.filter(r=>r[k]>0).length||1)):rows.reduce((s,r)=>s+Number(r[k]||0),0),save=()=>{localStorage.setItem('hb-data',JSON.stringify(data));localStorage.setItem('hb-labels',JSON.stringify(weeks))};
+function options(items,selected,all){return `<option value="all">${all}</option>`+items.map((x,i)=>`<option value="${i}" ${String(i)===selected?'selected':''}>${Array.isArray(x)?x[0]:x}</option>`).join('')}
+function dashboard(){let ids=branches.filter(b=>dashBranch==='all'||b[0]===dashBranch),indexes=period==='all'?weeks.map((_,i)=>i):mode==='weekly'?[+period]:months[+period][1],rows=ids.map(b=>({b,rows:indexes.map(i=>data[b[0]][i])})),label=period==='all'?(mode==='weekly'?'All available weeks':'All available months'):(mode==='weekly'?weeks[+period]:months[+period][0]),name=dashBranch==='all'?'All branches':branches.find(b=>b[0]===dashBranch)[1];controls.innerHTML=`<div class="toggle"><button class="${mode==='weekly'?'active':''}" onclick="mode='weekly';period='all';render()">Weekly</button><button class="${mode==='monthly'?'active':''}" onclick="mode='monthly';period='all';render()">Monthly</button></div><label>BRANCH<select onchange="dashBranch=this.value;render()"><option value="all">All Branches</option>${branches.map(b=>`<option value="${b[0]}" ${b[0]===dashBranch?'selected':''}>${b[1]}</option>`)}</select></label><label>${mode==='weekly'?'REPORTING WEEK':'REPORTING MONTH'}<select onchange="period=this.value;render()">${options(mode==='weekly'?weeks:months,period,mode==='weekly'?'All weeks':'All months')}</select></label>`;let totals=Object.fromEntries(monitor.map(k=>[k,total(rows.flatMap(x=>x.rows),k)]));page.innerHTML=`<div class="cards">${monitor.map(k=>`<article><small>${def(k)[1]}</small><strong>${format(k,totals[k])}</strong><span>${name} · ${label}</span></article>`).join('')}</div><section class="panel"><div class="panel-head"><div><h2>${dashBranch==='all'?'Per Branch Monitor':name+' Summary Report'}</h2><p>${mode==='weekly'?'Weekly':'Monthly'} totals · ${label}</p></div><em>${rows.length} branch${rows.length>1?'es':''}</em></div><div class="table"><table><thead><tr><th>Branch</th>${monitor.map(k=>`<th>${def(k)[1]}</th>`).join('')}</tr></thead><tbody>${rows.map(x=>`<tr><td><i>${x.b[2]}</i><b>${x.b[1]}</b></td>${monitor.map(k=>`<td>${format(k,total(x.rows,k))}</td>`).join('')}</tr>`).join('')}</tbody><tfoot><tr><td>${dashBranch==='all'?'All Branches Total':'Branch Total'}</td>${monitor.map(k=>`<td>${format(k,totals[k])}</td>`).join('')}</tr></tfoot></table></div></section>`}
+function weekly(){controls.innerHTML=`<label>REPORTING WEEK<select onchange="period=this.value;render()">${options(weeks,period,'All weeks')}</select></label>`;let ix=period==='all'?weeks.map((_,i)=>i):[+period];page.innerHTML=`<section class="panel"><div class="panel-head"><div><h2>Weekly Branch Report</h2><p>Compare all branches for the selected week.</p></div></div><div class="table"><table><thead><tr><th>Branch</th>${metrics.map(m=>`<th>${m[1]}</th>`).join('')}</tr></thead><tbody>${branches.map(b=>{let r=ix.map(i=>data[b[0]][i]);return `<tr><td><i>${b[2]}</i><b>${b[1]}</b></td>${metrics.map(m=>`<td>${format(m[0],total(r,m[0]))}</td>`).join('')}</tr>`}).join('')}</tbody></table></div></section>`}
+function scoreboard(){let b=branches.find(x=>x[0]===branch);controls.innerHTML=`<label>BRANCH<select onchange="branch=this.value;render()">${branches.map(x=>`<option value="${x[0]}" ${x[0]===branch?'selected':''}>${x[1]}</option>`)}</select></label>`;page.innerHTML=`<section class="panel"><div class="panel-head"><div><h2>${b[1]} Scorecard</h2><p>Click any weekly cell to enter a value.</p></div></div><div class="table"><table class="score"><thead><tr><th>Who</th><th>Measurable</th>${weeks.map(w=>`<th>${w}</th>`).join('')}<th>Total</th></tr></thead><tbody>${metrics.map((m,mi)=>`<tr><td>${mi===0||metrics[mi-1][2]!==m[2]?`<i>${m[3]}</i><b>${m[2]}</b>`:''}</td><td><b>${m[1]}</b></td>${weeks.map((w,wi)=>`<td><button onclick="editCell('${m[0]}',${wi})">${data[branch][wi][m[0]]?format(m[0],data[branch][wi][m[0]]):'−'}</button></td>`).join('')}<td>${format(m[0],total(data[branch],m[0]))}</td></tr>`).join('')}</tbody></table></div></section>`}
+function editCell(k,wi){modal.innerHTML=`<div class="backdrop" onclick="modal.innerHTML=''"><form onclick="event.stopPropagation()" onsubmit="event.preventDefault();data[branch][${wi}]['${k}']=Number(this.value.value)||0;save();modal.innerHTML='';render()"><button type="button" class="close" onclick="modal.innerHTML=''">×</button><h2>${def(k)[1]}</h2><p>${weeks[wi]} · ${def(k)[2]}</p><label>Value<input name="value" type="number" autofocus value="${data[branch][wi][k]||''}"></label><button>Save</button></form></div>`}
+function render(){document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));pageTitle.textContent=view==='dashboard'?'Total Dashboard':view==='weekly'?'Weekly Branch Report':branches.find(b=>b[0]===branch)[1]+' Scorecard';headerTitle.textContent=view==='dashboard'?'Revenue Growth Dashboard':branches.find(b=>b[0]===branch)[1];headerSub.textContent=view==='scoreboard'?'Weekly scorecard':view==='weekly'?'Weekly branch report':'Summary report';view==='dashboard'?dashboard():view==='weekly'?weekly():scoreboard()}
+branchNav.innerHTML=branches.map(b=>`<button onclick="branch='${b[0]}';view='scoreboard';render()"><i>${b[2]}</i>${b[1]}</button>`).join('');document.querySelectorAll('nav button').forEach(x=>x.onclick=()=>{view=x.dataset.view;period='all';render()});render();
