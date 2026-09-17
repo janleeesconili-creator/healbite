@@ -12,7 +12,23 @@ function openBranch(id){if(!unlocked.has(id)){let pin=prompt('Enter clinic PIN')
 function scoreboard(){let b=branches.find(x=>x[0]===branch);controls.innerHTML=`<label>BRANCH<select onchange="openBranch(this.value)">${visibleBranches().map(x=>`<option value="${x[0]}" ${x[0]===branch?'selected':''}>${x[1]}</option>`)}</select></label>`;page.innerHTML=`<section class="panel"><div class="panel-head"><div><h2>${b[1]} Scorecard</h2><p>Click any weekly cell to enter a value.</p></div></div><div class="table"><table class="score"><thead><tr><th>Who</th><th>Measurable</th>${weeks.map(w=>`<th>${w}</th>`).join('')}<th>Total</th></tr></thead><tbody>${metrics.map((m,mi)=>`<tr><td>${mi===0||metrics[mi-1][2]!==m[2]?`<i>${m[3]}</i><b>${m[2]}</b>`:''}</td><td><b>${m[1]}</b></td>${weeks.map((w,wi)=>`<td><button onclick="editCell('${m[0]}',${wi})">${data[branch][wi][m[0]]?format(m[0],data[branch][wi][m[0]]):'−'}</button></td>`).join('')}<td>${format(m[0],total(data[branch],m[0]))}</td></tr>`).join('')}</tbody></table></div></section>`}
 function editCell(k,wi){modal.innerHTML=`<div class="backdrop" onclick="modal.innerHTML=''"><form onclick="event.stopPropagation()" onsubmit="event.preventDefault();data[branch][${wi}]['${k}']=Number(this.value.value)||0;save();modal.innerHTML='';render()"><button type="button" class="close" onclick="modal.innerHTML=''">×</button><h2>${def(k)[1]}</h2><p>${weeks[wi]} · ${def(k)[2]}</p><label>Value<input name="value" type="number" step="0.01" inputmode="decimal" autofocus value="${data[branch][wi][k]||''}"></label><button>Save</button></form></div>`}
 function render(){updateBranchNav();page.classList.toggle('data-locked',!activeClinic);document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));pageTitle.textContent=view==='dashboard'?'Total Dashboard':view==='weekly'?'Weekly Branch Report':branches.find(b=>b[0]===branch)[1]+' Scorecard';headerTitle.textContent=view==='dashboard'?'Revenue Growth Dashboard':branches.find(b=>b[0]===branch)[1];headerSub.textContent=view==='scoreboard'?'Weekly scorecard':view==='weekly'?'Weekly branch report':'Summary report';view==='dashboard'?dashboard():view==='weekly'?weekly():scoreboard()}
-function updateBranchNav(){branchNav.innerHTML=visibleBranches().map(b=>`<button onclick="openBranch('${b[0]}')"><i>${b[2]}</i>${b[1]}</button>`).join('')}document.querySelectorAll('nav button').forEach(x=>x.onclick=()=>{if(x.dataset.view==='scoreboard')return openBranch(branch);view=x.dataset.view;period='all';render()});render();
+function updateBranchNav(){branchNav.innerHTML=branches.map(b=>`<button onclick="openBranch('${b[0]}')"><i>${b[2]}</i>${b[1]} <span>${unlocked.has(b[0])?'🔓':'🔒'}</span></button>`).join('')}document.querySelectorAll('nav button').forEach(x=>x.onclick=()=>{if(x.dataset.view==='scoreboard')return openBranch(branch);view=x.dataset.view;period='all';render()});render();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
