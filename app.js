@@ -1,7 +1,7 @@
 const branches=[['baclaran','Healbite Baclaran','HB'],['gtuazon','Healbite G. Tuazon','HG'],['zanicare','Zanicare Parañaque','ZP'],['mandaluyong','Healbite Mandaluyong','HM'],['pasig','Healbite Pasig','HP']];
 const metrics=[['adsSpend','Ads Spend','Janlee','J',1],['costMessage','Cost per Message','Janlee','J',1],['creatives','New Ad Creatives Tested','Janlee','J',0],['messages','Number of Total Messages','Admin','A',0],['hotLeads','Hot Leads','Admin','A',0],['appointments','Number of Appointments','Admin','A',0],['bookings','Total Bookings','Admin','A',0],['organicViews','Page Views Organic','Ads Team','AT',0],['adsViews','Page Views Ads','Ads Team','AT',0]],monitor=['adsSpend','costMessage','messages','organicViews','adsViews'],legacy=['Sep 12–18','Sep 5–11','Aug 29–Sep 4','Aug 22–28','Aug 15–21'];
 const fmtDate=d=>d.toLocaleDateString('en-US',{month:'short'}),start=()=>{let d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-((d.getDay()+1)%7));return d};
-const periods=(()=>{let a=[],d=start(),f=new Date(2026,7,15,12);while(d>=f){let e=new Date(d);e.setDate(e.getDate()+6);a.push({start:new Date(d),end:e,label:d.getMonth()===e.getMonth()?`${fmtDate(d)} ${d.getDate()}–${e.getDate()}`:`${fmtDate(d)} ${d.getDate()}–${fmtDate(e)} ${e.getDate()}`});d.setDate(d.getDate()-7)}return a})(),weeks=periods.map(x=>x.label),months=Object.entries(periods.reduce((m,w,i)=>{let k=w.end.toLocaleDateString('en-US',{month:'long',year:'numeric'});(m[k]??=[]).push(i);return m},{}));
+const periods=(()=>{let a=[],d=start(),f=new Date(2026,4,30,12);while(d>=f){let e=new Date(d);e.setDate(e.getDate()+6);a.push({start:new Date(d),end:e,label:d.getMonth()===e.getMonth()?`${fmtDate(d)} ${d.getDate()}–${e.getDate()}`:`${fmtDate(d)} ${d.getDate()}–${fmtDate(e)} ${e.getDate()}`});d.setDate(d.getDate()-7)}return a})(),weeks=periods.map(x=>x.label),months=Object.entries(periods.reduce((m,w,i)=>{let k=w.end.toLocaleDateString('en-US',{month:'long',year:'numeric'});(m[k]??=[]).push(i);return m},{}));
 const blank=()=>Object.fromEntries(metrics.map(m=>[m[0],0])),seed=()=>Object.fromEntries(branches.map(b=>[b[0],weeks.map(blank)]));let data=seed(),labels=JSON.parse(localStorage.getItem('hb-labels')||JSON.stringify(legacy)),old=JSON.parse(localStorage.getItem('hb-data')||'null');if(old)data=Object.fromEntries(branches.map(b=>[b[0],weeks.map(w=>old[b[0]]?.[labels.indexOf(w)]||blank())]));
 let view='dashboard',branch='baclaran',dashBranch='all',mode='weekly',period='all',unlocked=new Set(),activeClinic=null;const peso=n=>new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP',maximumFractionDigits:2}).format(n||0),count=n=>new Intl.NumberFormat('en-PH').format(n||0),def=k=>metrics.find(m=>m[0]===k),format=(k,n)=>def(k)[4]?peso(n):count(n),total=(rows,k)=>k==='costMessage'?(rows.filter(r=>r[k]>0).reduce((s,r)=>s+r[k],0)/(rows.filter(r=>r[k]>0).length||1)):rows.reduce((s,r)=>s+Number(r[k]||0),0),save=()=>{localStorage.setItem('hb-data',JSON.stringify(data));localStorage.setItem('hb-labels',JSON.stringify(weeks))};
 const visibleBranches=()=>activeClinic?branches.filter(b=>b[0]===activeClinic):branches;
@@ -13,6 +13,16 @@ function scoreboard(){let b=branches.find(x=>x[0]===branch);controls.innerHTML=`
 function editCell(k,wi){modal.innerHTML=`<div class="backdrop" onclick="modal.innerHTML=''"><form onclick="event.stopPropagation()" onsubmit="event.preventDefault();data[branch][${wi}]['${k}']=Number(this.value.value)||0;save();modal.innerHTML='';render()"><button type="button" class="close" onclick="modal.innerHTML=''">×</button><h2>${def(k)[1]}</h2><p>${weeks[wi]} · ${def(k)[2]}</p><label>Value<input name="value" type="number" step="0.01" inputmode="decimal" autofocus value="${data[branch][wi][k]||''}"></label><button>Save</button></form></div>`}
 function render(){updateBranchNav();page.classList.toggle('data-locked',!activeClinic);document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));pageTitle.textContent=view==='dashboard'?'Total Dashboard':view==='weekly'?'Weekly Branch Report':branches.find(b=>b[0]===branch)[1]+' Scorecard';headerTitle.textContent=view==='dashboard'?'Revenue Growth Dashboard':branches.find(b=>b[0]===branch)[1];headerSub.textContent=view==='scoreboard'?'Weekly scorecard':view==='weekly'?'Weekly branch report':'Summary report';view==='dashboard'?dashboard():view==='weekly'?weekly():scoreboard()}
 function updateBranchNav(){branchNav.innerHTML=branches.map(b=>`<button onclick="openBranch('${b[0]}')"><i>${b[2]}</i>${b[1]} <span>${unlocked.has(b[0])?'🔓':'🔒'}</span></button>`).join('')}document.querySelectorAll('nav button').forEach(x=>x.onclick=()=>{if(x.dataset.view==='scoreboard')return openBranch(branch);view=x.dataset.view;period='all';render()});render();
+
+
+
+
+
+
+
+
+
+
 
 
 
