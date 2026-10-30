@@ -1,3 +1,10 @@
+.data-locked > .dashboard-grid {
+  filter: blur(9px);
+  opacity: .16;
+  pointer-events: none;
+  user-select: none;
+}
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: minmax(420px, .9fr) minmax(520px, 1.35fr);
