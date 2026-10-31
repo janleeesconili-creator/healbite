@@ -1,3 +1,7 @@
+.backdrop {
+  z-index: 50;
+}
+
 .data-locked > .dashboard-grid {
   filter: blur(9px);
   opacity: .16;
