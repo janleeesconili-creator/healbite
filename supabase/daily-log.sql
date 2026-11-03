@@ -34,7 +34,10 @@ begin
   return query
   select * from public.healbite_daily_metrics d
   where d.branch_id = p_branch
-    and to_char(d.metric_date, 'YYYY-MM') = p_month
+    and case when length(p_month) = 4
+      then to_char(d.metric_date, 'YYYY') = p_month
+      else to_char(d.metric_date, 'YYYY-MM') = p_month
+    end
   order by d.metric_date desc;
 end;
 $$;
