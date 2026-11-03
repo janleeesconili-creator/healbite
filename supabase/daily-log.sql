@@ -2,6 +2,7 @@ create table if not exists public.healbite_daily_metrics (
   branch_id text not null references public.healbite_branches(id) on delete cascade,
   metric_date date not null,
   page_views numeric not null default 0,
+  impressions numeric not null default 0,
   hot_leads numeric not null default 0,
   booked numeric not null default 0,
   total_messages numeric not null default 0,
@@ -11,6 +12,9 @@ create table if not exists public.healbite_daily_metrics (
   updated_at timestamptz not null default now(),
   primary key (branch_id, metric_date)
 );
+
+alter table public.healbite_daily_metrics
+  add column if not exists impressions numeric not null default 0;
 
 alter table public.healbite_daily_metrics enable row level security;
 revoke all on public.healbite_daily_metrics from anon, authenticated;
@@ -49,11 +53,12 @@ as $$
 begin
   if p_pin <> '2026' then raise exception 'Invalid PIN'; end if;
   insert into public.healbite_daily_metrics (
-    branch_id, metric_date, page_views, hot_leads, booked,
+    branch_id, metric_date, page_views, impressions, hot_leads, booked,
     total_messages, ads_spend, cash_sales, accrual_sales, updated_at
   ) values (
     p_branch, p_date,
     greatest(0, coalesce((p_data->>'pageViews')::numeric,0)),
+    greatest(0, coalesce((p_data->>'impressions')::numeric,0)),
     greatest(0, coalesce((p_data->>'hotLeads')::numeric,0)),
     greatest(0, coalesce((p_data->>'booked')::numeric,0)),
     greatest(0, coalesce((p_data->>'totalMessages')::numeric,0)),
@@ -62,7 +67,8 @@ begin
     greatest(0, coalesce((p_data->>'accrualSales')::numeric,0)), now()
   )
   on conflict (branch_id, metric_date) do update set
-    page_views=excluded.page_views, hot_leads=excluded.hot_leads,
+    page_views=excluded.page_views, impressions=excluded.impressions,
+    hot_leads=excluded.hot_leads,
     booked=excluded.booked, total_messages=excluded.total_messages,
     ads_spend=excluded.ads_spend, cash_sales=excluded.cash_sales,
     accrual_sales=excluded.accrual_sales,
