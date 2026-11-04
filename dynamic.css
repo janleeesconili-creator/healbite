@@ -19,6 +19,22 @@ header .header-actions {
   white-space: nowrap;
 }
 
+.admin-nav { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+.admin-nav p { margin: 0 10px 7px; color: var(--muted); font-size: 10px; letter-spacing: .09em; }
+.admin-nav button { width: 100%; color: #ffd580; background: #241b0b; border: 1px solid #4b3a18; }
+.admin-nav button:hover,.admin-nav button.active { color: #fff; background: #7a4f00; }
+.payment-summary { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; margin-bottom: 16px; }
+.payment-summary article { padding: 20px; border: 1px solid var(--border); border-radius: 9px; background: var(--panel); }
+.payment-summary small { display: block; color: var(--muted); font-size: 10px; letter-spacing: .08em; }
+.payment-summary strong { display: block; margin-top: 12px; font: 700 30px monospace; }
+.payment-table th:nth-child(n),.payment-table td:nth-child(n) { text-align: left; }
+.payment-status { display: inline-flex; align-items: center; min-width: 82px; justify-content: center; padding: 6px 10px; border-radius: 999px; font-weight: 800; }
+.payment-status.paid { color: #7ee787; background: #17351f; }
+.payment-status.unpaid { color: #ff9b9b; background: #3b161b; }
+.payment-toggle { min-width: 120px; padding: 8px 12px; border: 1px solid #2ea043; border-radius: 7px; color: #7ee787; background: #17351f; cursor: pointer; }
+.payment-toggle.paid { border-color: #f85149; color: #ff9b9b; background: #3b161b; }
+.payment-toggle:disabled { cursor: wait; opacity: .6; }
+
 .posting-panel {
   margin-top: 18px;
 }
@@ -137,6 +153,8 @@ header .header-actions {
   .daily-kpis { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .sale-item { grid-template-columns: 1fr; }
   .remove-sale { width: 100%; }
+  .admin-nav { display: block; }
+  .payment-summary { grid-template-columns: 1fr; }
 }
 
 .dashboard-grid {
