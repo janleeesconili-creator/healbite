@@ -62,7 +62,7 @@ header .header-actions {
 .post-day:disabled { cursor: wait; opacity: .6; }
 .post-total { color: #ffb340; font-size: 16px; font-weight: 800; }
 
-.daily-panel { overflow: hidden; background: #fff; color: #0f2544; border-color: #d8e1ec; }
+.daily-panel { overflow: visible; background: #fff; color: #0f2544; border-color: #d8e1ec; }
 .daily-page-title { padding: 22px 20px 14px; background: #f4f7fb; }
 .daily-page-title h2 { margin: 0 0 6px; font-size: 28px; color: #071a36; }
 .daily-page-title p { margin: 0; color: #61738e; }
@@ -82,13 +82,14 @@ header .header-actions {
 .daily-month-table th:first-child,.daily-month-table td:first-child { text-align: left; min-width: 180px; }
 .daily-month-table td { padding: 11px 14px; border-color: #e4eaf2; color: #183153; text-align: right; background: #fff; }
 .daily-month-table tr:nth-child(even) td { background: #fbfcfe; }
-.daily-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding: 18px 20px; border-bottom: 1px solid #dfe7f1; background: #f8fafc; }
+.daily-head { position: sticky; top: 0; z-index: 20; display: flex; align-items: end; justify-content: space-between; gap: 20px; min-height: 94px; padding: 18px 20px; border-bottom: 1px solid #dfe7f1; background: #f8fafc; box-shadow: 0 5px 14px rgba(15,37,68,.08); }
 .daily-head h2 { margin: 0 0 5px; font-size: 18px; }
 .daily-head p { margin: 0; color: #61738e; }
 .daily-head label { color: #61738e; }
 .daily-head input { min-width: 155px; color: #0f2544; background: #fff; border-color: #cbd7e6; color-scheme: light; }
-.daily-scroll { overflow: auto; }
+.daily-scroll { overflow: visible; }
 .daily-table { min-width: 1250px; }
+.daily-table thead { position: sticky; top: 94px; z-index: 19; box-shadow: 0 5px 10px rgba(15,37,68,.06); }
 .daily-table th { text-align: center; color: #385171; background: #f8fafc; border-bottom: 1px solid #dfe7f1; }
 .daily-table th:first-child { min-width: 150px; text-align: left; }
 .daily-table td { padding: 7px 8px; text-align: center; color: #183153; border-color: #e4eaf2; background: #fff; }
@@ -127,8 +128,11 @@ header .header-actions {
   }
   .posting-head { align-items: stretch; flex-direction: column; }
   .posting-head input { width: 100%; }
-  .daily-head { align-items: stretch; flex-direction: column; }
+  .daily-panel { overflow: hidden; }
+  .daily-head { align-items: stretch; flex-direction: column; min-height: 0; }
   .daily-head input { width: 100%; }
+  .daily-scroll { overflow: auto; }
+  .daily-table thead { position: static; }
   .daily-page-title h2 { font-size: 23px; }
   .daily-kpis { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .sale-item { grid-template-columns: 1fr; }
