@@ -34,6 +34,11 @@ header .header-actions {
 .payment-toggle { min-width: 120px; padding: 8px 12px; border: 1px solid #2ea043; border-radius: 7px; color: #7ee787; background: #17351f; cursor: pointer; }
 .payment-toggle.paid { border-color: #f85149; color: #ff9b9b; background: #3b161b; }
 .payment-toggle:disabled { cursor: wait; opacity: .6; }
+.receipt-actions { display: flex; align-items: center; gap: 7px; }
+.receipt-actions small { max-width: 130px; overflow: hidden; color: var(--muted); text-overflow: ellipsis; }
+.receipt-upload,.receipt-view { display: inline-block; min-width: 96px; padding: 8px 10px; border: 1px solid #345f8c; border-radius: 7px; color: #9fc8ef; background: #10243b; font-size: 11px; text-align: center; cursor: pointer; }
+.receipt-upload input { display: none; }
+.receipt-view { border-color: #2ea043; color: #7ee787; background: #17351f; }
 
 .posting-panel {
   margin-top: 18px;
