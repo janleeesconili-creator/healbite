@@ -185,6 +185,11 @@ header .header-actions {
   grid-column: span 2;
 }
 
+.daily-dashboard-cards {
+  grid-template-columns: repeat(3,minmax(0,1fr));
+}
+.daily-dashboard-cards article:last-child { grid-column: auto; }
+
 .dynamic-cards article::after {
   content: "";
   position: absolute;
@@ -298,7 +303,9 @@ header .header-actions {
 
 @media (max-width: 760px) {
   .dashboard-grid .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .daily-dashboard-cards { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .dynamic-cards article:last-child { grid-column: span 2; }
+  .daily-dashboard-cards article:last-child { grid-column: auto; }
   .branch-bar-row { grid-template-columns: 1fr; gap: 10px; }
   .bar-metrics { grid-template-columns: 1fr; gap: 10px; }
   .bar-metrics > div { grid-template-columns: 58px 1fr 72px; }
