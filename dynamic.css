@@ -449,3 +449,42 @@ tfoot td { color: #0d552f; background: #e7f8f0; }
 .backdrop form input,.backdrop form select,.backdrop form textarea { color: #17304f; background: #ffffff; }
 .sales-empty { color: #61738e; border-color: #b9c8d8; }
 .add-sale { color: #1769e0; border-color: #8ab7df; }
+
+/* Dark navigation and dashboard masthead */
+aside,header { color: #f4f8ff; background: #07111f; border-color: #1f3045; }
+.brand strong,.brand small,header strong { color: #f4f8ff; }
+.workspace { color: #f4f8ff; background: #0e1b2d; border-color: #2a405a; }
+.workspace small,.nav-label,aside footer,header small,header span { color: #9db2ca; }
+aside button { color: #b8d5f3; }
+aside button.active,aside button:hover { color: #ffffff; background: #175fc1; }
+#branchNav select { color: #e9f3ff; background: #0e1b2d; border-color: #38516e; color-scheme: dark; }
+.admin-nav { border-color: #24384f; }
+.admin-nav p { color: #9db2ca; }
+.admin-nav button { color: #ffd580; background: #2a210d; border-color: #715724; }
+.admin-nav button:hover,.admin-nav button.active { color: #171006; background: #ffbd3d; }
+header .header-actions button { color: #ffffff; background: #1769e0; border-color: #3a83e6; box-shadow: 0 6px 16px rgba(23,105,224,.25); }
+header .header-actions button:hover { background: #0e59c4; }
+header .header-actions button:last-child { color: #ffffff; background: #168a4b; border-color: #37a867; box-shadow: 0 6px 16px rgba(22,138,75,.23); }
+header .header-actions button:last-child:hover { background: #0f713c; }
+
+.intro { margin: -38px -34px 26px; padding: 38px 34px 28px; background: #07111f; }
+.intro h1 { color: #ffffff; }
+.intro span { color: #9db2ca; }
+.intro p { color: #43d17d; }
+.intro #controls label { color: #9db2ca; }
+.intro #controls select,.intro #controls input { color: #edf6ff; background: #111d2b; border-color: #35475c; color-scheme: dark; }
+.intro .toggle { background: #0b1524; border-color: #35475c; }
+.intro .toggle button { color: #aebfd2; }
+.intro .toggle button.active { color: #ffffff; background: #1769e0; }
+
+@media (max-width: 1300px) {
+  .intro { margin-left: -22px; margin-right: -22px; padding-left: 22px; padding-right: 22px; }
+}
+
+@media (max-width: 700px) {
+  .intro { margin: -24px -14px 20px; padding: 24px 14px 22px; }
+}
+
+@media (max-width: 520px) {
+  .intro { margin: -18px -10px 18px; padding: 20px 10px; }
+}
