@@ -27,23 +27,47 @@ header .header-actions {
 .payment-summary article { padding: 20px; border: 1px solid var(--border); border-radius: 9px; background: var(--panel); }
 .payment-summary small { display: block; color: var(--muted); font-size: 10px; letter-spacing: .08em; }
 .payment-summary strong { display: block; margin-top: 12px; font: 700 30px monospace; }
-.payment-table th:nth-child(n),.payment-table td:nth-child(n) { text-align: left; }
+.payment-panel .table { overflow-x: auto; }
+.payment-table { min-width: 1080px; table-layout: fixed; }
+.payment-table th:nth-child(n),.payment-table td:nth-child(n) { padding: 11px 10px; text-align: left; vertical-align: middle; }
+.payment-table th:nth-child(1) { width: 205px; }
+.payment-table th:nth-child(2) { width: 115px; }
+.payment-table th:nth-child(3) { width: 92px; }
+.payment-table th:nth-child(4) { width: 145px; }
+.payment-table th:nth-child(5) { width: 112px; }
+.payment-table th:nth-child(6) { width: 122px; }
+.payment-table th:nth-child(7) { width: 275px; }
 .payment-status { display: inline-flex; align-items: center; min-width: 82px; justify-content: center; padding: 6px 10px; border-radius: 999px; font-weight: 800; }
 .payment-status.paid { color: #7ee787; background: #17351f; }
 .payment-status.unpaid { color: #ff9b9b; background: #3b161b; }
-.payment-toggle { min-width: 120px; padding: 8px 12px; border: 1px solid #2ea043; border-radius: 7px; color: #7ee787; background: #17351f; cursor: pointer; }
+.payment-toggle { width: 100%; min-width: 0; padding: 8px 8px; border: 1px solid #2ea043; border-radius: 7px; color: #7ee787; background: #17351f; cursor: pointer; white-space: nowrap; }
 .payment-toggle.paid { border-color: #f85149; color: #ff9b9b; background: #3b161b; }
 .payment-toggle:disabled { cursor: wait; opacity: .6; }
 .payment-total { border-color: #2ea043 !important; background: linear-gradient(135deg,#17351f,#102a1a) !important; }
 .payment-total strong { color: #7ee787; }
-.payment-amount { min-width: 115px; padding: 8px 12px; border: 1px solid #345f8c; border-radius: 7px; color: #fff; background: #10243b; cursor: pointer; font: 700 12px monospace; }
-.payment-date { min-width: 145px; padding: 8px 10px; color: #dce9f8; background: #101820; border-color: #345f8c; color-scheme: dark; }
-.receipt-actions { display: flex; align-items: center; gap: 7px; }
-.receipt-actions small { max-width: 130px; overflow: hidden; color: var(--muted); text-overflow: ellipsis; }
-.receipt-upload,.receipt-view,.receipt-link { display: inline-block; min-width: 96px; padding: 8px 10px; border: 1px solid #345f8c; border-radius: 7px; color: #9fc8ef; background: #10243b; font-size: 11px; text-align: center; cursor: pointer; }
+.payment-amount { width: 100%; min-width: 0; padding: 8px 8px; border: 1px solid #345f8c; border-radius: 7px; color: #fff; background: #10243b; cursor: pointer; font: 700 11px monospace; white-space: nowrap; }
+.payment-date { width: 100%; min-width: 0; padding: 8px 7px; color: #dce9f8; background: #101820; border-color: #345f8c; color-scheme: dark; font-size: 11px; }
+.receipt-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-items: center; gap: 6px; }
+.receipt-actions small { grid-column: 1 / -1; max-width: 100%; overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
+.receipt-upload,.receipt-view,.receipt-link { display: block; min-width: 0; width: 100%; padding: 7px 6px; border: 1px solid #345f8c; border-radius: 7px; color: #9fc8ef; background: #10243b; font-size: 10px; text-align: center; white-space: nowrap; cursor: pointer; }
 .receipt-upload input { display: none; }
 .receipt-view { border-color: #2ea043; color: #7ee787; background: #17351f; }
 .receipt-link { border-color: #8957e5; color: #d2b8ff; background: #271946; }
+
+@media (max-width: 1300px) {
+  .content { padding-left: 22px; padding-right: 22px; }
+  .payment-table { min-width: 760px; }
+  .payment-table th:nth-child(2),.payment-table td:nth-child(2) { display: none; }
+  .payment-table th:nth-child(1) { width: 180px; }
+  .payment-table th:nth-child(3) { width: 82px; }
+  .payment-table th:nth-child(4) { width: 125px; }
+  .payment-table th:nth-child(5) { width: 100px; }
+  .payment-table th:nth-child(6) { width: 105px; }
+  .payment-table th:nth-child(7) { width: 168px; }
+  .payment-status { min-width: 72px; padding: 6px 7px; font-size: 11px; }
+  .receipt-actions { gap: 5px; }
+  .receipt-upload,.receipt-view,.receipt-link { padding: 7px 4px; font-size: 9px; }
+}
 
 .posting-panel {
   margin-top: 18px;
