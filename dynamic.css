@@ -488,3 +488,77 @@ header .header-actions button:last-child:hover { background: #0f713c; }
 @media (max-width: 520px) {
   .intro { margin: -18px -10px 18px; padding: 20px 10px; }
 }
+
+/* UX refinement: compact dark shell with clear, colored actions */
+.app { grid-template-columns: 248px minmax(0,1fr); }
+aside { padding: 20px 14px; box-shadow: 8px 0 28px rgba(7,17,31,.08); }
+.brand { padding: 0 2px 20px; }
+.brand>b { width: 40px; height: 40px; border-radius: 11px; background: linear-gradient(145deg,#2781f5,#125fd0); }
+.workspace { margin-bottom: 12px; padding: 12px; border-radius: 10px; }
+aside button { min-height: 40px; padding: 9px 11px; border-radius: 9px; font-weight: 600; }
+aside button.active { box-shadow: 0 7px 18px rgba(23,95,193,.23); }
+.nav-label { margin: 22px 10px 9px; }
+#branchNav select { min-height: 42px; border-radius: 9px; }
+.admin-nav button { min-height: 42px; }
+
+header { height: 72px; padding: 0 28px; box-shadow: 0 5px 18px rgba(7,17,31,.12); }
+header strong { font-size: 14px; }
+header .header-actions { gap: 10px; }
+header .header-actions span { margin-right: 3px; font-size: 10px; }
+header .header-actions button { min-height: 40px; padding: 10px 16px; border-radius: 10px; transition: transform .16s ease,box-shadow .16s ease,background .16s ease; }
+header .header-actions button:hover { transform: translateY(-1px); box-shadow: 0 9px 20px rgba(23,105,224,.3); }
+header .header-actions button:last-child:hover { box-shadow: 0 9px 20px rgba(22,138,75,.3); }
+
+.content { max-width: 1600px; padding: 26px 28px 38px; }
+.intro {
+  align-items: center;
+  min-height: 132px;
+  margin: 0 0 22px;
+  padding: 24px 28px;
+  border: 1px solid #20344c;
+  border-radius: 16px;
+  background: linear-gradient(125deg,#07111f 0%,#0a1728 58%,#0d1d31 100%);
+  box-shadow: 0 14px 32px rgba(7,17,31,.15);
+}
+.intro>div:first-child { min-width: 290px; }
+.intro p { margin-bottom: 7px; }
+.intro h1 { margin: 0 0 7px; font-size: clamp(30px,2.4vw,40px); line-height: 1.05; letter-spacing: -.025em; }
+.intro span { font-size: 13px; }
+#controls { flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
+.intro #controls label { gap: 7px; font-weight: 700; letter-spacing: .08em; }
+.intro #controls select,.intro #controls input { min-width: 190px; min-height: 42px; padding: 10px 38px 10px 12px; border-radius: 9px; }
+.intro .toggle { min-height: 42px; padding: 4px; border-radius: 10px; }
+.intro .toggle button { min-width: 68px; padding: 8px 13px; border-radius: 7px; }
+.intro .toggle button.active { box-shadow: 0 5px 14px rgba(23,105,224,.28); }
+
+.cards article,.panel { border-radius: 12px; }
+.cards article { transition: transform .16s ease,box-shadow .16s ease; }
+.cards article:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(15,37,68,.09); }
+
+@media (max-width: 1300px) {
+  .content { padding: 22px; }
+  .intro { margin: 0 0 20px; padding: 22px; }
+  .intro #controls select,.intro #controls input { min-width: 170px; }
+}
+
+@media (max-width: 980px) {
+  .intro { align-items: stretch; flex-direction: column; }
+  #controls { justify-content: flex-start; }
+}
+
+@media (max-width: 700px) {
+  .app { grid-template-columns: 1fr; }
+  header { height: auto; min-height: 66px; padding: 12px 14px; }
+  .content { padding: 14px; }
+  .intro { min-height: 0; margin: 0 0 16px; padding: 20px 16px; border-radius: 13px; }
+  .intro>div:first-child { min-width: 0; }
+  #controls { width: 100%; }
+  #controls label { flex: 1 1 180px; }
+  .intro #controls select,.intro #controls input { width: 100%; min-width: 0; }
+}
+
+@media (max-width: 520px) {
+  .intro { margin: 0 0 14px; padding: 18px 14px; }
+  .intro h1 { font-size: 28px; }
+  header .header-actions button { min-height: 36px; padding: 8px 10px; font-size: 12px; }
+}
